@@ -179,7 +179,7 @@ benchmark is claimed. This package targets laptop training/testing.
 To supply an explicit trained model:
 
 ```bat
-.venv\Scripts\python.exe predict.py --model "results\RUN_...\best_model.joblib" --csv "D:\Signals\new.csv" --out "new_predictions"
+.venv\Scripts\python.exe predict.py --model "results\RUN_...\best_model.joblib" --csv "path\Signals\new.csv" --out "new_predictions"
 ```
 
 ## Stop and resume
@@ -187,7 +187,7 @@ To supply an explicit trained model:
 Ctrl+C stops processing. Repeat with the same result path:
 
 ```bat
-.venv\Scripts\python.exe train.py --augmentation-dir "D:\Project\MotorcycleIMULab" --out "results\RUN_..." --resume
+.venv\Scripts\python.exe train.py --augmentation-dir "path_for_simulate" --out "results\RUN_..." --resume
 ```
 
 Verified feature caches are reused; unfinished model fitting starts again.
