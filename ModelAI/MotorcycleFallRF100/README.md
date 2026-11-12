@@ -33,17 +33,19 @@ luyện RF100, ghi báo cáo rồi dọn dữ liệu tạm:
 
 ## Lệnh Python tương đương
 
+Chạy các lệnh trong thư mục `ModelAI/MotorcycleFallRF100` của bản clone. Các đường dẫn tương đối được tính từ thư mục này.
+
 ```bat
 py -3.11 -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements.txt
-.venv\Scripts\python.exe train.py --augmentation-dir "D:\Project\MotorcycleIMULab"
+.venv\Scripts\python.exe train.py --augmentation-dir "..\..\Simulate\MotorcycleIMULab"
 ```
 
 Nếu đã chuyển phiên tăng cường ra khỏi dự án MATLAB, chỉ định cả phiên tái
-dựng gốc tương ứng:
+dựng gốc tương ứng. Ví dụ dưới đây giả sử bạn đã lưu cả hai phiên trong thư mục cục bộ saved:
 
 ```bat
-.venv\Scripts\python.exe train.py --augmentation-dir "D:\Saved\Augmented_RUN" --original-run "D:\Saved\Original_RUN"
+.venv\Scripts\python.exe train.py --augmentation-dir ".\saved\Augmented_RUN" --original-run ".\saved\Original_RUN"
 ```
 
 Để huấn luyện chỉ với dữ liệu đo:
@@ -143,14 +145,14 @@ số gộp có chứa dữ liệu đã dùng để khớp mô hình. TEST thực
 ## Dự đoán theo tệp và theo luồng
 
 Đầu vào dùng gia tốc m/s², vận tốc góc °/s và thời gian tính bằng giây.
-Dấu thời gian phải tăng đều. Tần số nguồn phải là bội nguyên của 100 Hz.
+Ví dụ sử dụng bản ghi đi kèm. Để dự đoán trên bản ghi khác, thay đường dẫn sau --csv bằng đường dẫn tệp của bạn. Dấu thời gian phải tăng đều. Tần số nguồn phải là bội nguyên của 100 Hz.
 Chương trình đọc được dữ liệu đo gốc phân cách bằng tab, mã hóa Latin-1 và
 CSV tăng cường. Tiêu đề `time,Ax,Ay,Az,Gx,Gy,Gz` và các tên thay thế
 `Rx,Ry,Rz` cũng được hỗ trợ.
 
 ```bat
-.venv\Scripts\python.exe predict.py --csv "D:\Signals\new.csv"
-.venv\Scripts\python.exe predict.py --csv "D:\Signals\new.csv" --stream
+.venv\Scripts\python.exe predict.py --csv "data\original\fall_slippery_straight.csv"
+.venv\Scripts\python.exe predict.py --csv "data\original\fall_slippery_straight.csv" --stream
 ```
 
 `--stream` phát lại dữ liệu theo từng mẫu. Chế độ đọc toàn tệp dùng cùng bộ
@@ -163,7 +165,7 @@ và kiểm tra trên máy tính.
 Chỉ định tệp mô hình đã huấn luyện khi dự đoán bằng mô hình có sẵn trong repo:
 
 ```bat
-.venv\Scripts\python.exe predict.py --model "results\RUN_20261110_121039_061836\best_model.joblib" --csv "D:\Signals\new.csv" --out "new_predictions"
+.venv\Scripts\python.exe predict.py --model "results\RUN_20261110_121039_061836\best_model.joblib" --csv "data\original\fall_slippery_straight.csv" --out "new_predictions"
 ```
 
 ## Dừng và chạy tiếp
@@ -171,7 +173,7 @@ Chỉ định tệp mô hình đã huấn luyện khi dự đoán bằng mô hì
 Nhấn Ctrl+C để dừng. Khi chạy tiếp, dùng cùng đường dẫn đầu ra:
 
 ```bat
-.venv\Scripts\python.exe train.py --augmentation-dir "D:\Project\MotorcycleIMULab" --out "results\RUN_..." --resume
+.venv\Scripts\python.exe train.py --augmentation-dir "..\..\Simulate\MotorcycleIMULab" --out "results\RUN_..." --resume
 ```
 
 Chương trình tái sử dụng bộ nhớ đệm đặc trưng đã xác minh và bắt đầu lại bước
