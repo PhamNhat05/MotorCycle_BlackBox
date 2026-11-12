@@ -1,46 +1,32 @@
+Thư mục này chứa các thư viện riêng của firmware. PlatformIO biên dịch chúng thành thư viện tĩnh rồi liên kết vào tệp thực thi.
 
-This directory is intended for project specific (private) libraries.
-PlatformIO will compile them to static libraries and link into the executable file.
+Đặt mã nguồn mỗi thư viện trong một thư mục con riêng. Ví dụ:
 
-The source code of each library should be placed in a separate directory
-("lib/your_library_name/[Code]").
+lib/
+├── Bar/
+│   ├── docs/
+│   ├── examples/
+│   ├── src/
+│   │   ├── Bar.c
+│   │   └── Bar.h
+│   └── library.json
+├── Foo/
+│   ├── Foo.c
+│   └── Foo.h
+└── README
 
-For example, see the structure of the following example libraries `Foo` and `Bar`:
+Tệp library.json là tùy chọn và dùng để khai báo cấu hình biên dịch cho thư viện.
+https://docs.platformio.org/page/librarymanager/config.html
 
-|--lib
-|  |
-|  |--Bar
-|  |  |--docs
-|  |  |--examples
-|  |  |--src
-|  |     |- Bar.c
-|  |     |- Bar.h
-|  |  |- library.json (optional. for custom build options, etc) https://docs.platformio.org/page/librarymanager/config.html
-|  |
-|  |--Foo
-|  |  |- Foo.c
-|  |  |- Foo.h
-|  |
-|  |- README --> THIS FILE
-|
-|- platformio.ini
-|--src
-   |- main.c
+Ví dụ sử dụng hai thư viện trong src/main.c:
 
-Example contents of `src/main.c` using Foo and Bar:
-```
 #include <Foo.h>
 #include <Bar.h>
 
-int main (void)
+int main(void)
 {
-  ...
+    /* Mã chương trình */
 }
 
-```
-
-The PlatformIO Library Dependency Finder will find automatically dependent
-libraries by scanning project source files.
-
-More information about PlatformIO Library Dependency Finder
-- https://docs.platformio.org/page/librarymanager/ldf.html
+PlatformIO tự tìm các thư viện phụ thuộc bằng cách quét mã nguồn dự án.
+https://docs.platformio.org/page/librarymanager/ldf.html

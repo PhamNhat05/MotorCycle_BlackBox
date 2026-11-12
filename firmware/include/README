@@ -1,37 +1,15 @@
+Thư mục này chứa các tệp tiêu đề của firmware.
 
-This directory is intended for project header files.
-
-A header file is a file containing C declarations and macro definitions
-to be shared between several project source files. You request the use of a
-header file in your project source file (C, C++, etc) located in `src` folder
-by including it, with the C preprocessing directive `#include'.
-
-```src/main.c
+Tệp tiêu đề chứa khai báo C hoặc C++ và định nghĩa macro dùng chung giữa các tệp mã nguồn. Để sử dụng một tệp tiêu đề từ mã trong thư mục src, dùng chỉ thị #include. Ví dụ trong src/main.c:
 
 #include "header.h"
 
-int main (void)
+int main(void)
 {
- ...
+    /* Mã chương trình */
 }
-```
 
-Including a header file produces the same results as copying the header file
-into each source file that needs it. Such copying would be time-consuming
-and error-prone. With a header file, the related declarations appear
-in only one place. If they need to be changed, they can be changed in one
-place, and programs that include the header file will automatically use the
-new version when next recompiled. The header file eliminates the labor of
-finding and changing all the copies as well as the risk that a failure to
-find one copy will result in inconsistencies within a program.
+Khai báo dùng chung được lưu ở một nơi. Khi biên dịch lại, các tệp mã nguồn dùng #include sẽ nhận nội dung đã cập nhật. Tệp tiêu đề C thường có phần mở rộng .h.
 
-In C, the convention is to give header files names that end with `.h'.
-
-Read more about using header files in official GCC documentation:
-
-* Include Syntax
-* Include Operation
-* Once-Only Headers
-* Computed Includes
-
+Tài liệu GCC giải thích cú pháp, cách trình tiền xử lý tìm và chèn tệp tiêu đề, cơ chế tránh chèn lặp và cách dùng macro với #include.
 https://gcc.gnu.org/onlinedocs/cpp/Header-Files.html

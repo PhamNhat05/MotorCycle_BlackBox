@@ -1,179 +1,152 @@
-# MotorcycleIMULab: ORIGINAL and AUGMENTED
+# MotorcycleIMULab — Tái dựng và tăng cường dữ liệu IMU
 
-This MATLAB project contains two clearly separated stages. Directory names,
-function names, comments, messages, charts and reports are in English.
-The ten measured recordings are included without changing their bytes.
+Dự án MATLAB gồm hai giai đoạn: `ORIGINAL` tái dựng tín hiệu đo và `AUGMENTED` sinh biến thể. Mười bản ghi đo đi kèm được giữ nguyên nội dung.
 
-## Three execution commands
+## Mục tiêu và phạm vi mô phỏng
 
-Extract the ZIP and set MATLAB's Current Folder to `MotorcycleIMULab`.
+Dự án dùng MATLAB để tái dựng tư thế và chuyển động theo thời gian từ dữ liệu
+IMU sáu trục của xe máy. Từ chuyển động tái dựng, chương trình tính lại gia tốc
+riêng và vận tốc góc tại vị trí cảm biến, rồi so sánh với dữ liệu đo trên từng
+trục. Bước tăng cường giữ nguyên chuyển động nguồn và khảo sát ảnh hưởng của
+độ lệch cảm biến, vị trí lắp IMU và tác động kết hợp của hai yếu tố.
 
-| Command | Work performed |
-|---|---|
-| `RUN_ORIGINAL` | Reconstruct and evaluate the ten measured recordings only |
-| `RUN_AUGMENT` | Generate variants from a completed original-results session |
-| `RUN_ALL` | Process originals, then augment if all ten original gates pass |
+### Dữ liệu và đánh giá
 
-For the complete workflow:
+| Nhóm | Bản ghi ngã | Bản ghi không ngã |
+| --- | --- | --- |
+| BUILD | Ngã trong cua, ngã ở vòng xuyến, ngã khi nghiêng xe | Tăng tốc đường thẳng, phanh gấp, Fall-like 1, Fall-like 2 |
+| TEST | Ngã trên đường thẳng trơn | Tăng tốc trong cua, Fall-like 3 |
+
+Hiệu chuẩn chung được ước lượng từ 7 bản ghi BUILD và cố định trước khi xử lý
+3 bản ghi TEST. Mỗi bản ghi TEST cung cấp dữ liệu IMU của chính nó để tái dựng
+chuyển động theo cấu hình đã cố định. Phép đánh giá sử dụng toàn bộ thời lượng
+của cả 10 bản ghi.
+
+| Tiêu chí theo từng trục | Gia tốc | Vận tốc góc |
+| --- | --- | --- |
+| RMSE tối đa | Giá trị lớn hơn giữa 0,35 m/s² và 5% biên độ đỉnh–đỉnh | Giá trị lớn hơn giữa 1 °/s và 5% biên độ đỉnh–đỉnh |
+| Tương quan Pearson tối thiểu | 0,95 khi độ lệch chuẩn của tín hiệu đo đạt 0,10 m/s² | 0,95 khi độ lệch chuẩn của tín hiệu đo đạt 0,50 °/s |
+
+Chương trình còn kiểm tra trạng thái hữu hạn, chuẩn quaternion và sai số tái tạo
+tín hiệu đã làm trơn. Bước tăng cường chạy khi cả 10 bản ghi đạt kiểm tra và sinh
+100 biến thể cho mỗi bản ghi. Mỗi biến thể giữ thời gian, nhãn và thông tin truy
+ngược về bản ghi nguồn. Khi huấn luyện bộ nhận diện ngã, bản ghi gốc và các biến
+thể của nó cần nằm trong cùng nhóm dữ liệu.
+
+Các chỉ số trên đánh giá độ bám của tín hiệu IMU. Xác nhận độ chính xác của quỹ
+đạo 3D cần phép đo đối chiếu độc lập. Đánh giá khả năng nhận diện ngã trên các
+sự kiện mới cần các bản ghi thực độc lập với dữ liệu huấn luyện.
+
+## Chạy mô phỏng
+
+Đặt thư mục làm việc của MATLAB thành `MotorcycleIMULab`. Dự án dùng MATLAB R2023a với môi trường Java chuẩn. Các biểu đồ SVG được xuất bằng `print(...,'-dsvg')`.
+
+| Lệnh | Công việc |
+| --- | --- |
+| `RUN_ORIGINAL` | Tái dựng và đánh giá mười bản ghi đo. |
+| `RUN_AUGMENT` | Sinh biến thể từ một phiên ORIGINAL hoàn tất. |
+| `RUN_ALL` | Tái dựng rồi tăng cường nếu cả mười bản ghi đạt kiểm tra. |
 
 ```matlab
 outputs = RUN_ALL;
 ```
 
-For separate stages:
+Để chạy từng bước:
 
 ```matlab
 originalResults = RUN_ORIGINAL;
 augmentedResults = RUN_AUGMENT(originalResults);
 ```
 
-`RUN_AUGMENT` without arguments selects the latest original-results session.
-There are **exactly three `.m` files whose names contain `RUN`**. There is no
-`RUN_PROJECT` alias. `CHECK_PROJECT` performs synthetic validation only; it does
-not reconstruct the real recordings or generate a dataset.
+`RUN_AUGMENT` không có đối số sẽ chọn phiên ORIGINAL mới nhất. Để chạy các kiểm tra tổng hợp trên dữ liệu mô phỏng, dùng:
 
 ```matlab
 checks = CHECK_PROJECT;
 ```
 
-Target environment: MATLAB R2023a with the standard Java runtime. No additional
-MATLAB toolbox is required. SVG uses `print(...,'-dsvg')`, which avoids relying
-on the newer SVG support in `exportgraphics`.
+## Cấu trúc thư mục
 
-## Directory structure
+| Đường dẫn | Nội dung |
+| --- | --- |
+| `ORIGINAL/data/build/`, `ORIGINAL/data/test/` | Bảy bản ghi BUILD và ba bản ghi TEST. |
+| `ORIGINAL/config/INPUT_MANIFEST.json` | Mã nguồn dữ liệu, nhãn, mốc thời gian, số dòng và mã kiểm tra. |
+| `ORIGINAL/ORIGINAL_CONFIG.m` | Cấu hình tái dựng và xuất kết quả. |
+| `ORIGINAL/src/calibration/` | Ước lượng độ lệch nền của con quay từ nhóm BUILD. |
+| `ORIGINAL/src/conditioning/` | Khớp spline và tính đạo hàm số. |
+| `ORIGINAL/src/reconstruction/` | Tính quaternion, chuyển động liên tục và tín hiệu IMU. |
+| `ORIGINAL/src/evaluation/` | Chỉ số độ bám và điều kiện hoàn tất. |
+| `ORIGINAL/src/io/`, `plotting/`, `reporting/` | Đọc và ghi tệp, vẽ biểu đồ và tạo báo cáo. |
+| `ORIGINAL/src/workflow/`, `validation/` | Điều phối quy trình và kiểm tra số trên dữ liệu tổng hợp. |
+| `AUGMENTED/AUGMENTATION_CONFIG.m` | Số lượng biến thể, giới hạn thay đổi và thiết lập hiển thị. |
+| `AUGMENTED/src/planning/`, `generation/` | Lập kế hoạch tái lập được và tính IMU với vị trí, độ lệch mới. |
+| `AUGMENTED/src/evaluation/`, `io/` | Tính sai số, xuất dữ liệu và xác minh khi chạy tiếp. |
+| `AUGMENTED/src/plotting/`, `reporting/` | Vẽ biểu đồ và tạo báo cáo từng biến thể. |
+| `AUGMENTED/src/workflow/`, `validation/` | Điều phối, lập chỉ mục và kiểm tra số lượng, giới hạn. |
+| `ORIGINAL/results/`, `AUGMENTED/results/` | Kết quả được tạo cục bộ theo từng phiên. |
 
-| Directory or file | Responsibility |
-|---|---|
-| `ORIGINAL/data/build/` | Seven measured BUILD recordings |
-| `ORIGINAL/data/test/` | Three measured TEST recordings |
-| `ORIGINAL/config/INPUT_MANIFEST.json` | Source keys, labels, timestamps, row counts and checksums |
-| `ORIGINAL/ORIGINAL_CONFIG.m` | Original reconstruction and output settings |
-| `ORIGINAL/src/calibration/` | Shared BUILD-only gyroscope-prior estimation |
-| `ORIGINAL/src/conditioning/` | Spline fitting and numerical differentiation |
-| `ORIGINAL/src/reconstruction/` | Quaternion operations, continuous motion and forward IMU |
-| `ORIGINAL/src/evaluation/` | Full-record fit metrics and completion flags |
-| `ORIGINAL/src/io/` | Source reads, CSV/JSON/HTML writes and checksums |
-| `ORIGINAL/src/plotting/` | Original measured-versus-reconstructed charts |
-| `ORIGINAL/src/reporting/` | Shared readable HTML styles and chart controls |
-| `ORIGINAL/src/workflow/` | Original-stage orchestration, exports and reports |
-| `ORIGINAL/src/validation/` | Synthetic numerical checks |
-| `ORIGINAL/results/` | Original results only |
-| `AUGMENTED/AUGMENTATION_CONFIG.m` | Variant counts, perturbation bounds and display settings |
-| `AUGMENTED/src/planning/` | Reproducible variant recipes |
-| `AUGMENTED/src/generation/` | Fixed-position and constant-bias sensor equations |
-| `AUGMENTED/src/evaluation/` | Per-variant and aggregate error components |
-| `AUGMENTED/src/io/` | Variant paths, export transactions and resume verification |
-| `AUGMENTED/src/plotting/` | One-variant versus original charts |
-| `AUGMENTED/src/reporting/` | Individual detailed HTML pages |
-| `AUGMENTED/src/workflow/` | Augmentation orchestration, indexes and status |
-| `AUGMENTED/src/validation/` | Counts, limits and generation-helper checks |
-| `AUGMENTED/results/` | Augmented results only |
+Các đường dẫn rút gọn trong bảng cùng nằm dưới `src/` của giai đoạn tương ứng. MATLAB chỉ thêm thư mục mã nguồn vào đường dẫn tìm kiếm. Các hàm tính toán và tạo báo cáo dùng chung nằm ở `ORIGINAL/src/`. [Hướng dẫn đọc mã](CODE_GUIDE.md)
 
-Only source directories are added to MATLAB's search path. Data and generated
-results are not added. Shared numerical and reporting utilities remain under
-`ORIGINAL/src` and are reused by the augmentation stage.
+## Kết quả tái dựng ORIGINAL
 
-See `CODE_GUIDE.md` for function inputs, outputs and the execution order.
+Chương trình dùng các đoạn đầu của bảy bản ghi BUILD để ước lượng hiệu chuẩn rồi khóa cấu hình trước khi đánh giá TEST. Phép đánh giá giữ toàn bộ dữ liệu nguồn, gồm 24 dòng khởi đầu có giá trị bằng không.
 
-## Original results
+Mở `REPORT.html` trong `ORIGINAL/results/RUN_.../`. Mỗi thư mục `records/<parent>/` chứa:
 
-Original processing keeps the full 7 BUILD / 3 TEST protocol. The calibration is
-estimated from BUILD prefixes and frozen before TEST. No source rows are removed.
-The 24 startup rows containing zeros remain part of the original input and score.
+| Tệp | Nội dung |
+| --- | --- |
+| `MODEL.mat` | Mô hình tái dựng dùng làm đầu vào tăng cường. |
+| `FULL_SIGNAL_COMPARISON.csv` | Tín hiệu đo và tín hiệu tái dựng trên sáu trục. |
+| `FULL_STATE.csv` | Trạng thái chuyển động và các đại lượng góc. |
+| `FULL_RECORD_FIT.svg`, `FULL_RECORD_FIT.png` | Biểu đồ so sánh dạng vectơ và ảnh độ phân giải cao. |
+| `AXIS_FIT.csv` | RMSE, MAE, sai số cực đại, tương quan và độ bám từng trục. |
+| `QUALITY.json` | Tiêu chí chất lượng và dấu xác nhận hoàn tất. |
 
-Each session is written to `ORIGINAL/results/RUN_.../`. Open its `REPORT.html`.
-Each `records/<parent>/` directory contains:
+`ALL_AXIS_FIT.csv` tổng hợp 60 dòng, tương ứng mười bản ghi và sáu trục. Trạng thái chuyển động được lưu để tính IMU và sinh biến thể theo vị trí.
 
-| Output | Content |
-|---|---|
-| `MODEL.mat` | Full original reconstruction, used as augmentation input |
-| `FULL_SIGNAL_COMPARISON.csv` | Measured and reconstructed six-axis signals |
-| `FULL_STATE.csv` | Full motion states and angular quantities |
-| `FULL_RECORD_FIT.svg` | Sharp, zoomable vector chart |
-| `FULL_RECORD_FIT.png` | High-resolution PNG version |
-| `AXIS_FIT.csv` | Six-axis RMSE, MAE, peak error, correlation and fit |
-| `QUALITY.json` | Quality gates and final completion marker |
+## Kết quả tăng cường AUGMENTED
 
-`ALL_AXIS_FIT.csv` contains 60 rows: ten recordings times six axes.
-Movie generation has been removed. Motion-state calculation is retained because
-it supplies the original IMU model and position-based augmentation.
+| Nhóm | Mã biến thể | Mỗi bản ghi | Tổng cộng |
+| --- | --- | ---: | ---: |
+| Chỉ đổi độ lệch | 001–034 | 34 | 340 |
+| Chỉ đổi vị trí | 035–067 | 33 | 330 |
+| Đổi vị trí và độ lệch | 068–100 | 33 | 330 |
+| **Tổng** | **001–100** | **100** | **1.000** |
 
-## Augmented results
+Các biến thể giữ mốc thời gian và lưới lấy mẫu 1.000 Hz của bản ghi nguồn. Bộ dữ liệu đầy đủ có 100.810.700 dòng dữ liệu tăng cường, chưa tính tiêu đề CSV.
 
-Every real recording produces **100 total variants**, divided as follows:
+Ví dụ: `AUGMENTED/results/RUN_.../records/fall_curve/position_only/variant_035.csv`.
 
-| Group | Variant IDs per parent | Per parent | Across ten parents |
-|---|---|---:|---:|
-| Bias only | 001-034 | 34 | 340 |
-| Position only | 035-067 | 33 | 330 |
-| Position and bias | 068-100 | 33 | 330 |
-| **Total** | **001-100** | **100** | **1,000** |
+Mỗi biến thể có CSV, biểu đồ SVG và PNG, trang HTML, chỉ số sáu trục, JSON ghi tham số và dấu xác nhận hoàn tất. Mở `INDEX.html`, chọn bản ghi nguồn rồi chọn báo cáo biến thể. `VARIANT_MANIFEST.csv` ghi 1.000 bộ tham số. `ALL_AXIS_METRICS.csv` chứa 6.000 dòng chỉ số khi phiên hoàn tất.
 
-All source timestamps and the 1,000 Hz sampling grid are retained. The completed
-dataset contains 100,810,700 augmented data rows, excluding CSV headers.
+### Đọc biểu đồ và báo cáo
 
-Example output location:
+Báo cáo dùng nền trắng, chữ tối, cỡ chữ nội dung 18 px và cỡ chữ bảng 17 px. Biểu đồ SVG giữ độ nét khi phóng to. Ảnh PNG được xuất ở 220 DPI.
 
-`AUGMENTED/results/RUN_.../records/fall_curve/position_only/variant_035.csv`
+- **Readable size** hiển thị ở cỡ đọc mặc định và cho phép cuộn ngang.
+- **Fit width** thu biểu đồ vừa chiều rộng trang.
+- **Open full-size chart** mở tệp SVG.
+- **Download high-resolution PNG** tải ảnh PNG.
 
-Each variant has a full CSV, vector SVG, high-resolution PNG, detailed HTML page,
-six-axis metrics, parameter JSON and final completion marker. The SVG and PNG are
-two formats of **the same chart**, not different augmented examples.
+Biểu đồ có sáu hàng cho sáu trục và ba cột. Cột đầu so sánh bản ghi đo với một biến thể theo toàn bộ thời lượng. Cột thứ hai phóng to một khoảng thời gian ở tần số lấy mẫu gốc. Cột cuối tách chênh lệch tổng, ảnh hưởng vị trí, ảnh hưởng độ lệch và sai số tái dựng cơ sở. Tiêu đề biểu đồ và báo cáo ghi độ dịch XYZ, vị trí mới và sáu độ lệch. Trang HTML có thêm bảng sai số theo toàn bộ thời lượng.
 
-Open the session's `INDEX.html`, select a parent, then select one detailed report.
-`VARIANT_MANIFEST.csv` records 1,000 exact parameter sets. After completion,
-`ALL_AXIS_METRICS.csv` contains 6,000 axis-metric rows.
+[AUGMENTED/docs/REPORT_PREVIEW.html](AUGMENTED/docs/REPORT_PREVIEW.html) minh họa giao diện báo cáo bằng bản xem trước tạo từ Python.
 
-## Readable HTML and charts
+## Cấu hình tăng cường
 
-- White chart backgrounds, dark text and larger Arial labels.
-- HTML body text is 18 px; table text is 17 px with bold headers.
-- Main charts use vector SVG, so text and curves remain sharp when enlarged.
-- PNG exports use 220 DPI for use outside the browser.
-- **Readable size** is the default, with horizontal scrolling for large charts.
-- **Fit width** gives a smaller overview when desired.
-- **Open full-size chart** opens the SVG directly.
-- **Download high-resolution PNG** provides the raster copy.
+| Tham số | Giá trị mặc định |
+| --- | --- |
+| Độ lệch gia tốc bổ sung | ±10 m/s² trên mỗi trục. |
+| Độ lệch con quay bổ sung | ±0,2 °/s trên mỗi trục. |
+| Độ dịch vị trí trong hệ thân | Độ dài vectơ tối đa 0,5 m. |
+| Vị trí IMU danh định | `[0.05 0 -0.05]` m. |
+| Vị trí mới | `nominal_position + position_shift`. |
+| Hướng lắp IMU | Giữ nguyên. |
+| Độ lệch trong một biến thể | Hằng số suốt bản ghi. |
+| Hạt giống ngẫu nhiên | `20261109`. |
 
-Each augmented chart contains six rows, one per axis, and three columns:
+Ví dụ, dịch +0,5 m trên trục X cho vị trí mới `[0.55 0 -0.05]` m. Các biến thể dịch riêng từng trục theo hai chiều giúp quan sát ảnh hưởng của tham số. Các biến thể còn lại phối hợp nhiều trục bằng bộ sinh số ngẫu nhiên MATLAB có hạt giống cố định. Chuỗi số của MATLAB và NumPy có thể khác nhau khi dùng cùng hạt giống.
 
-1. The complete measured parent and exactly one augmented signal.
-2. A detailed interval at the original sample rate.
-3. Total difference, position effect, bias effect and baseline reconstruction error.
-
-The chart header records the exact XYZ shift, new position and six bias offsets.
-The detailed HTML page repeats these parameters in readable text and provides a
-full-record error table. Multiple augmented examples are not overlaid together.
-
-An independently generated layout preview is provided in
-`AUGMENTED/docs/REPORT_PREVIEW.html`. It illustrates the report theme and display
-controls; it is identified as a Python preview rather than a native MATLAB run.
-
-## Augmentation settings
-
-| Parameter | Default |
-|---|---|
-| Additional acceleration bias | Each sensor axis within +/-10 m/s^2 |
-| Additional gyroscope bias | Each sensor axis within +/-0.2 deg/s |
-| Position shift | Body-frame vector length at most 0.5 m |
-| Nominal sensor position | `[0.05 0 -0.05]` m |
-| New position | `nominal_position + position_shift` |
-| Sensor orientation | Preserved |
-| Bias within a variant | Constant over the full recording |
-| Seed | 20261109 |
-
-The previously written value "10 m/s" is interpreted as an acceleration-bias
-bound of 10 m/s^2. The gyro bound remains 0.2 deg/s. The 0.5 m limit applies to the
-**length of the displacement vector**, not to all three coordinates separately.
-For example, shifting X by +0.5 m moves the nominal sensor to `[0.55 0 -0.05]` m.
-
-Signed single-axis probes make parameter effects easy to inspect. Other variants
-combine axes using a local seeded MATLAB random stream. MATLAB and NumPy do not
-necessarily produce the same random sequence from the same numeric seed.
-
-## Continue interrupted work
-
-The same three execution commands support continuation:
+## Chạy tiếp phiên bị gián đoạn
 
 ```matlab
 RUN_ORIGINAL('resume')
@@ -181,21 +154,13 @@ RUN_AUGMENT([], 'resume')
 RUN_ALL('resume')
 ```
 
-An explicit existing directory can also be supplied. `RUN_ALL('resume')` reuses
-the latest augmented session only when it belongs to the selected original session.
-Create `STOP_AFTER_CURRENT_TASK.txt` inside the active result session to stop at
-a record or variant boundary. Remove it before continuing.
+Bạn có thể chỉ định thư mục phiên cần chạy tiếp. `RUN_ALL('resume')` chỉ dùng phiên tăng cường mới nhất nếu nó thuộc phiên ORIGINAL đã chọn. Tạo tệp `STOP_AFTER_CURRENT_TASK.txt` trong thư mục kết quả đang chạy để dừng sau bản ghi hoặc biến thể hiện tại. Xóa tệp đó trước khi chạy tiếp.
 
-Only completed exports with matching identifiers and checksums are reused.
-Changing code or settings requires a new affected-stage session. Changes confined
-to augmentation settings do not invalidate already completed original results.
-Because directory and function names have changed, start fresh sessions with this
-version rather than copying results generated by an older project layout.
+Chương trình tái sử dụng các đầu ra đã hoàn tất có mã định danh và mã kiểm tra khớp. Khi sửa mã hoặc cấu hình, tạo phiên mới cho giai đoạn bị ảnh hưởng. Thay đổi riêng cấu hình tăng cường vẫn cho phép dùng lại phiên ORIGINAL đã hoàn tất. Hãy tạo phiên mới khi chuyển từ phiên bản có cấu trúc thư mục hoặc tên hàm cũ.
 
-## Scientific scope and validation
+## Phương pháp và kiểm tra
 
-The original calibration, spline, quaternion, integration and forward-IMU equations
-are preserved. Augmentation keeps latent motion fixed and applies:
+Tăng cường giữ nguyên chuyển động tái dựng rồi tính ảnh hưởng của dịch chuyển vị trí và độ lệch:
 
 ```text
 position_effect = (alpha x displacement + omega x (omega x displacement)) * R_BS
@@ -203,16 +168,6 @@ augmented_acc   = baseline_acc + position_effect + acceleration_bias_delta
 augmented_gyro  = baseline_gyro + gyroscope_bias_delta
 ```
 
-The source's specific-force and coordinate conventions are documented in
-`ORIGINAL/docs/MATHEMATICS.md`. Strong IMU fit is not independent validation of
-the world trajectory. The chosen augmentation bounds are experimental settings.
-Keep each original parent and all its variants in the same ML split. Descendants
-of the three TEST parents are marked as holdout stress tests.
+Xem quy ước hệ tọa độ và gia tốc riêng trong [tài liệu phương pháp](ORIGINAL/docs/MATHEMATICS.md). Giới hạn tăng cường là các tham số thí nghiệm. Biến thể từ ba bản ghi TEST của mô phỏng được đánh dấu để kiểm tra độ bền cảm biến trên dữ liệu giữ riêng.
 
-Source preservation, MATLAB syntax, English naming, dependency paths and report
-contracts are checked in `ORIGINAL/docs/VALIDATION.json`. The build environment
-does not contain MATLAB, so no native MATLAB or graphics execution is claimed.
-`CHECK_PROJECT` and the stage quality gates execute in the user's MATLAB session.
-
-The packaged `results` directories are initially empty apart from their README
-files. New data and reports are created by the three execution commands.
+[Thông tin kiểm tra](ORIGINAL/docs/VALIDATION.json) ghi các kiểm tra bảo toàn dữ liệu gốc, cú pháp MATLAB, đường dẫn phụ thuộc và định dạng báo cáo. Các kiểm tra `CHECK_PROJECT` và tiêu chí chất lượng từng bước được thực thi trong phiên MATLAB của người dùng.

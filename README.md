@@ -2,7 +2,7 @@
 
 Đồ án PBL5 xây dựng nguyên mẫu hộp đen thu tín hiệu quán tính của xe máy và đánh giá khả năng nhận diện ngã bằng mô hình Random Forest. Khi xác nhận ngã, thiết bị được thiết kế để gửi SMS kèm tọa độ GPS đến số liên hệ đã cài đặt. Phần nhúng hiện thực hiện lấy mẫu và lưu dữ liệu IMU. Mô hình nhận diện đã được đánh giá trên máy tính. Suy luận trên ESP32-S3, định vị và gửi SMS là các phần cần tích hợp và kiểm thử.
 
-## Cấu trúc repository
+## Cấu trúc kho mã
 
 | Thư mục | Nội dung |
 | --- | --- |

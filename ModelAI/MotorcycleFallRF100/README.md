@@ -1,115 +1,100 @@
 # MotorcycleFallRF100
 
-Python 3.11 command-line AI project for the supplied MotorcycleIMULab ORIGINAL
-and AUGMENTED data. All classifiers in this project are **Random Forests with
-exactly 100 trees**, maximum depth 8 and 24 input features. No epoch parameter is
-used. The ten original measured CSVs are included byte-for-byte. MATLAB is not
-required for AI training or prediction; MATLAB generates the optional variants.
+Dự án Python 3.11 dùng dữ liệu IMU của MotorcycleIMULab để nhận diện ngã xe
+máy. Mỗi bộ phân loại Random Forest sử dụng **100 cây**, độ sâu tối đa 8
+và 24 đặc trưng đầu vào. Dự án kèm 10 tệp CSV đo gốc, giữ nguyên nội dung.
+MATLAB dùng để sinh dữ liệu tăng cường. Phần huấn luyện và dự đoán chạy bằng Python.
 
-## Start on Windows
+## Bắt đầu trên Windows
 
-Extract this ZIP to a writable folder. Install 64-bit Python 3.11.
+1. Cài Python 3.11 bản 64 bit. Mở thư mục dự án và chạy
+   `INSTALL_WINDOWS.bat` để tạo môi trường và cài thư viện qua Internet.
+2. Để huấn luyện với dữ liệu tăng cường, chạy `RUN_ORIGINAL` và `RUN_AUGMENT`
+   trong dự án MATLAB MotorcycleIMULab.
+3. Chạy `RUN_TRAIN.bat`. Khi được hỏi, nhập đường dẫn thư mục gốc
+   MotorcycleIMULab, bỏ dấu ngoặc kép. Chương trình tìm phiên tăng cường qua
+   `AUGMENTED/results/LATEST_RUN.txt`. Bạn cũng có thể nhập đường dẫn đến
+   thư mục `AUGMENTED/results/RUN_...` cụ thể.
+4. Khi terminal hiện `COMPLETE`, mở `results/RUN_.../REPORT.html` để xem báo cáo.
+5. Chạy `RUN_PREDICT.bat` để dự đoán trên CSV theo định dạng đo gốc hoặc định
+   dạng do trình mô phỏng xuất.
 
-1. Open `INSTALL_WINDOWS.bat` once; Internet is needed to install dependencies.
-2. Finish `RUN_ORIGINAL` and `RUN_AUGMENT` in your separate MotorcycleIMULab
-   MATLAB project if you want augmented training.
-3. Open `RUN_TRAIN.bat`. Enter the MotorcycleIMULab root folder, without
-   surrounding quotes. The script resolves `AUGMENTED/results/LATEST_RUN.txt`.
-   Alternatively enter the exact `AUGMENTED/results/RUN_...` directory.
-4. Open `results/RUN_.../REPORT.html` when the console prints `COMPLETE`.
-5. Use `RUN_PREDICT.bat` for a new original-format or generated-format CSV.
+Nhấn Enter ở bước nhập đường dẫn để huấn luyện chỉ với dữ liệu đo. Đường dẫn
+tăng cường sai hoặc phiên xuất chưa hoàn tất sẽ báo lỗi. Chạy `RUN_CHECK.bat`
+để kiểm tra dữ liệu gốc và chạy các ca kiểm tra tổng hợp.
 
-Pressing Enter at the augmentation prompt explicitly runs measured-only training.
-An invalid or incomplete supplied augmentation directory raises an error; it
-does not silently fall back to measured-only training. The uploaded MATLAB ZIP
-contains generation code, not the 1,000 generated CSVs. No generated dataset is
-invented or counted as already available.
-
-`RUN_CHECK.bat` executes meaningful synthetic checks plus raw-data integrity
-checks. These are the three RUN launchers: training, prediction, checks.
-Names, code comments and generated reports are in English.
-
-An optional complete importer/pipeline check creates 1,000 miniature synthetic
-CSV variants in a temporary directory, checks 600/200/200 isolation, rejects a
-tampered CSV and incomplete exports, fits RF100, writes reports, then cleans up:
+Ca kiểm tra đầy đủ dưới đây tạo 1.000 CSV tổng hợp cỡ nhỏ trong thư mục tạm,
+kiểm tra cách chia 600/200/200, phát hiện tệp bị sửa hoặc xuất thiếu, huấn
+luyện RF100, ghi báo cáo rồi dọn dữ liệu tạm:
 
 ```bat
 .venv\Scripts\python.exe tests\augmentation_fixture_check.py
 ```
 
-This is a software fixture, not measured motorcycle classification performance.
-
-## Equivalent Python commands
+## Lệnh Python tương đương
 
 ```bat
 py -3.11 -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements.txt
-.venv\Scripts\python.exe train.py --augmentation-dir "path"
+.venv\Scripts\python.exe train.py --augmentation-dir "D:\Project\MotorcycleIMULab"
 ```
 
-If you moved the augmented result outside its source project, provide its
-matching original result as well:
+Nếu đã chuyển phiên tăng cường ra khỏi dự án MATLAB, chỉ định cả phiên tái
+dựng gốc tương ứng:
 
 ```bat
-.venv\Scripts\python.exe train.py --augmentation-dir "path\Saved\Augmented_RUN" --original-run "path\Saved\Original_RUN"
+.venv\Scripts\python.exe train.py --augmentation-dir "D:\Saved\Augmented_RUN" --original-run "D:\Saved\Original_RUN"
 ```
 
-Without augmentation:
+Để huấn luyện chỉ với dữ liệu đo:
 
 ```bat
 .venv\Scripts\python.exe train.py
 ```
 
-Incomplete exported datasets are accepted only with explicit `--allow-partial`.
-Counts then reflect actual completed CSV/JSON pairs. A complete standard run
-requires 100 variants per parent: 34 bias-only, 33 position-only, 33 combined.
+Thêm `--allow-partial` nếu muốn dùng phiên tăng cường đang xuất dở. Số lượng
+khi đó dựa trên các cặp CSV và JSON đã hoàn tất. Một phiên đầy đủ gồm 100 biến
+thể trên mỗi bản ghi nguồn, chia thành 34 biến thể độ lệch, 33 biến thể vị trí
+và 33 biến thể kết hợp.
 
-## Exact AI split
+## Phân chia dữ liệu
 
-| AI split | Original parents | Falls / nonfalls | Expected variants | Available files with complete augmentation |
-|---|---:|---:|---:|---:|
+| Nhóm AI | Bản ghi gốc | Ngã / không ngã | Biến thể dự kiến | Tổng số tệp khi tăng cường đầy đủ |
+| --- | ---: | ---: | ---: | ---: |
 | TRAIN | 6 | 2 / 4 | 600 | 606 |
 | VALIDATION | 2 | 1 / 1 | 200 | 202 |
 | TEST | 2 | 1 / 1 | 200 | 202 |
 
-TRAIN: `fall_curve`, `fall_leaning`, `acceleration_straight`,
-`harsh_braking_straight`, `fall_like_1`, `fall_like_2`.
+- **TRAIN** — `fall_curve`, `fall_leaning`, `acceleration_straight`, `harsh_braking_straight`, `fall_like_1`, `fall_like_2`.
+- **VALIDATION** — `fall_roundabout`, `acceleration_curve`.
+- **TEST** — `fall_slippery_straight`, `fall_like_3`.
 
-VALIDATION: `fall_roundabout`, `acceleration_curve`.
+Tỷ lệ 7 BUILD / 3 TEST của mô phỏng được lưu để truy xuất nguồn gốc. Bộ
+phân loại dùng cách chia 6/2/2 trong `config/parents.json`, theo bản ghi
+gốc thay vì chia ngẫu nhiên theo cửa sổ. Mọi biến thể đi cùng nhóm với bản
+ghi nguồn. Hai bản ghi đo VALIDATION dùng để chọn mô hình và ngưỡng. Hai
+bản ghi đo TEST dùng cho đánh giá chính. Các biến thể VALIDATION và TEST
+dùng để khảo sát độ bền trước thay đổi cảm biến sau khi chốt mô hình.
 
-TEST: `fall_slippery_straight`, `fall_like_3`.
+## Huấn luyện và chọn mô hình
 
-The simulation's 7 BUILD / 3 TEST grouping remains provenance metadata. The AI
-6/2/2 grouping is explicit in `config/parents.json`; no random window split is
-performed. Every descendant follows its original parent.
+Khi có dữ liệu tăng cường, dự án huấn luyện hai ứng viên:
 
-Six TRAIN originals and their 600 descendants fit the mixed model. Only the two
-real VALIDATION files select the threshold and candidate. The 200 validation
-descendants and 200 test descendants are evaluated after model selection as
-separate sensor-robustness checks. They do not enter fitting or model selection.
-The two real TEST files provide the primary held-out-file result.
+- `real_only__rf100` dùng sáu bản ghi đo TRAIN.
+- `mixed__rf100` dùng sáu bản ghi đo TRAIN và các biến thể đã hoàn tất của chúng.
 
-## What is trained
+Hai ứng viên cùng dùng 100 cây, độ sâu tối đa 8, mỗi lá tối thiểu một mẫu,
+lấy mẫu bootstrap, xét số đặc trưng bằng căn bậc hai tổng số đặc trưng khi
+chia nút, seed 42 và 24 đặc trưng đầu vào. Trọng số huấn luyện cân bằng theo
+lớp, bản ghi nguồn, loại dữ liệu đo hoặc tăng cường và từng bản ghi biến thể.
 
-With augmentation, two controlled candidates are fitted:
+Trên VALIDATION, thứ tự ưu tiên là tỷ lệ phát hiện sự kiện gắn với mốc tiếp
+xúc, điểm F2, ít cảnh báo nhầm hơn và độ trễ không âm ngắn hơn. Khi các tiêu
+chí bằng nhau, ưu tiên mô hình hỗn hợp. Nếu các ngưỡng cho kết quả bằng nhau,
+ưu tiên ngưỡng cao hơn. Quyết định được ghi cùng mã băm trước khi đọc tín
+hiệu TEST. TEST chỉ dùng để đánh giá các ứng viên đã cố định.
 
-- `real_only__rf100`: six measured TRAIN files.
-- `mixed__rf100`: the same six measured files plus their completed descendants.
-
-Both use identical 100-tree settings, depth 8, minimum leaf size 1, bootstrap,
-sqrt feature subsampling, seed 42 and 24 features. TRAIN weights balance class,
-parent, measured/synthetic category and descendant recording. Every window of a
-long file is not treated as an equally independent physical experiment.
-
-Real VALIDATION selects in this order: contact-associated event recall, F2,
-fewer false alarm events, shorter nonnegative contact delay. Exact condition
-ties prefer mixed. Threshold ties prefer the higher threshold. The choice is
-hashed and frozen before numeric real TEST streams are opened. TEST never
-reselects/refits a model. The final selected model is always RF100.
-
-## Compatible augmentation export
-
-Expected files from your current MATLAB project:
+## Định dạng dữ liệu tăng cường
 
 ```text
 AUGMENTED/results/RUN_.../
@@ -121,82 +106,87 @@ AUGMENTED/results/RUN_.../
 ORIGINAL/results/<matching-run>/FROZEN_CONFIGURATION.json
 ```
 
-CSV headers: `Time_s,Ax_m_s2,Ay_m_s2,Az_m_s2,Gx_deg_s,Gy_deg_s,Gz_deg_s`.
-The importer verifies completion markers, CSV/definition hashes, parent model
-hashes, frozen configuration, source timing, group identity and perturbation
-bounds. Paths and file counts come from the manifest, not from a broad CSV glob.
+Tiêu đề CSV là `Time_s,Ax_m_s2,Ay_m_s2,Az_m_s2,Gx_deg_s,Gy_deg_s,Gz_deg_s`.
+Trình nhập lấy đường dẫn và số lượng từ manifest, rồi đối chiếu dấu hoàn
+tất, mã băm của CSV, cấu hình biến thể và mô hình nguồn, cùng mốc thời gian,
+nhóm biến thể, giới hạn nhiễu chỉnh và cấu hình đã khóa.
 
-**Shared-calibration handling:** the simulator estimates a gyro prior from
-seven BUILD parents, one of which is AI VALIDATION. The importer analytically
-replaces the old gyro-prior contribution to the centripetal position-shift term
-with a prior estimated only from the six AI TRAIN parents. Constant prior change
-does not change angular acceleration. Exported CSV bytes remain unchanged.
-This sensor-level operation is logged in `AUGMENTATION_REBASE_INFO.json` and
-`DATASET_AUDIT.csv`. See `docs/METHOD.md` for scope and equations.
+**Hiệu chuẩn dùng chung.** Trình mô phỏng ước lượng độ lệch nền của con quay
+từ bảy bản ghi BUILD, trong đó có một bản ghi thuộc VALIDATION của AI. Khi
+nhập dữ liệu, chương trình tính lại đóng góp của độ lệch này trong thành phần
+gia tốc hướng tâm do dịch vị trí, sử dụng ước lượng từ sáu bản ghi TRAIN.
+Hiệu chỉnh độ lệch hằng giữ nguyên gia tốc góc và được áp dụng khi nhập,
+giữ nguyên nội dung CSV đã xuất. Chi tiết lưu trong
+`AUGMENTATION_REBASE_INFO.json` và `DATASET_AUDIT.csv`.
+[Phương pháp và công thức](docs/METHOD.md)
 
-## Output files
+## Kết quả đầu ra
 
-- `REPORT.html`: readable white-background report with SVG charts and tables.
-- `DATA_SPLIT.csv`, `SPLIT_SUMMARY.csv`: expected AND actual original/augmented counts.
-- `DATASET_AUDIT.csv`: source hashes, parent groups, feature-window counts, rebase correction.
-- `VALIDATION_CANDIDATES.csv`, `VALIDATION_THRESHOLD_SEARCH.csv`: selection evidence.
-- `MODEL_SELECTION_FROZEN.json` and `.sha256`: decision before numeric TEST reads.
-- `TEST_COMPARISON_PREDECLARED_MODELS.csv`: fixed-candidate comparison without reselection.
-- `EVALUATION_SUMMARY.csv`, `CLASS_METRICS.csv`, `PER_RECORD_METRICS.csv`.
-- Confusion matrices for original TRAIN, real VALIDATION, real TEST, augmented
-  TRAIN, held-out augmentation and the all-data fitted diagnostic when available.
-- `predictions/original/`: every full-window prediction for all ten originals.
-- `predictions/augmented/`: every evaluated descendant's timeline.
-- `ORIGINALS_SEQUENTIAL_TIMELINE.csv`: ten independent sessions placed on a common
-  display timeline. Filter/buffer/alarm state resets at file boundaries; joining
-  separate recordings is not a real uninterrupted motorcycle journey.
-- `best_model.joblib`, `BEST_MODEL_INFO.json`, `models/`: fitted RF100 bundles.
-- `feature_cache/`, `RUN_LOG.txt`, `STAGES.jsonl`: verified reuse and stage order.
+| Tệp hoặc thư mục | Nội dung |
+| --- | --- |
+| `REPORT.html` | Báo cáo, bảng và biểu đồ SVG. |
+| `DATA_SPLIT.csv`, `SPLIT_SUMMARY.csv` | Phân nhóm và số lượng bản ghi dự kiến, thực tế. |
+| `DATASET_AUDIT.csv` | Mã băm nguồn, nhóm bản ghi, số cửa sổ đặc trưng và thông tin hiệu chỉnh. |
+| `VALIDATION_CANDIDATES.csv`, `VALIDATION_THRESHOLD_SEARCH.csv` | Kết quả chọn mô hình và ngưỡng. |
+| `MODEL_SELECTION_FROZEN.json` và tệp `.sha256` | Quyết định đã chốt trước khi đọc dữ liệu TEST. |
+| `TEST_COMPARISON_PREDECLARED_MODELS.csv` | So sánh trên TEST giữa các ứng viên đã xác định trước. |
+| `EVALUATION_SUMMARY.csv`, `CLASS_METRICS.csv`, `PER_RECORD_METRICS.csv` | Chỉ số tổng hợp, theo lớp và theo bản ghi. |
+| `predictions/original/`, `predictions/augmented/` | Dự đoán theo cửa sổ cho bản ghi gốc và biến thể được đánh giá. |
+| `ORIGINALS_SEQUENTIAL_TIMELINE.csv` | Ghép 10 phiên độc lập lên một trục thời gian hiển thị. Bộ lọc, bộ đệm và trạng thái cảnh báo được đặt lại giữa các tệp. |
+| `best_model.joblib`, `BEST_MODEL_INFO.json`, `models/` | Mô hình đã huấn luyện và thông tin liên quan. |
+| `feature_cache/`, `RUN_LOG.txt`, `STAGES.jsonl` | Bộ nhớ đệm đặc trưng, nhật ký và thứ tự các bước. |
 
-TRAIN and all-data scores include fitted examples. They must not be described
-as generalization accuracy. Only one independent recorded fall exists in real
-TEST; 100 variants of it do not become 100 independent crashes.
+Báo cáo có ma trận nhầm lẫn cho các nhóm được đánh giá. Chỉ số TRAIN và chỉ
+số gộp có chứa dữ liệu đã dùng để khớp mô hình. TEST thực có một sự kiện ngã
+độc lập, dù sự kiện này có thể có 100 biến thể cảm biến.
 
-## Full-file and live inference
+## Dự đoán theo tệp và theo luồng
 
-Acceleration input is m/s^2; gyro input is deg/s. Times are in seconds and must
-be uniform and increasing. Source frequency must be an integer multiple of
-100 Hz. The supplied tab-separated Latin-1 raw CSVs and generated CSVs are both
-supported. Named `time,Ax,Ay,Az,Gx,Gy,Gz` and Rx/Ry/Rz aliases are also accepted.
-
-```bat
-.venv\Scripts\python.exe predict.py --csv "path\Signals\new.csv"
-.venv\Scripts\python.exe predict.py --csv "path\Signals\new.csv" --stream
-```
-
-`--stream` replays causal sample-by-sample inference. Default full-file inference
-uses the same causal filter, decimation phase, past-only windows and features.
-The `StreamingPredictor` API in `rf100/stream.py` accepts successive samples or
-blocks from a live acquisition source. It produces a fall score/label/alarm
-after the initial full window, then every 0.5 s. No ESP32 latency or memory
-benchmark is claimed. This package targets laptop training/testing.
-
-To supply an explicit trained model:
+Đầu vào dùng gia tốc m/s², vận tốc góc °/s và thời gian tính bằng giây.
+Dấu thời gian phải tăng đều. Tần số nguồn phải là bội nguyên của 100 Hz.
+Chương trình đọc được dữ liệu đo gốc phân cách bằng tab, mã hóa Latin-1 và
+CSV tăng cường. Tiêu đề `time,Ax,Ay,Az,Gx,Gy,Gz` và các tên thay thế
+`Rx,Ry,Rz` cũng được hỗ trợ.
 
 ```bat
-.venv\Scripts\python.exe predict.py --model "results\RUN_...\best_model.joblib" --csv "path\Signals\new.csv" --out "new_predictions"
+.venv\Scripts\python.exe predict.py --csv "D:\Signals\new.csv"
+.venv\Scripts\python.exe predict.py --csv "D:\Signals\new.csv" --stream
 ```
 
-## Stop and resume
+`--stream` phát lại dữ liệu theo từng mẫu. Chế độ đọc toàn tệp dùng cùng bộ
+lọc nhân quả, pha lấy mẫu giảm, cửa sổ chỉ chứa dữ liệu quá khứ và đặc trưng.
+API `StreamingPredictor` trong `rf100/stream.py` nhận từng mẫu hoặc từng
+khối từ nguồn thu trực tiếp. Điểm số, nhãn và trạng thái cảnh báo có sau cửa
+sổ đầy đủ đầu tiên, sau đó cập nhật mỗi 0,5 giây. Phần này phục vụ huấn luyện
+và kiểm tra trên máy tính.
 
-Ctrl+C stops processing. Repeat with the same result path:
+Chỉ định tệp mô hình đã huấn luyện khi dự đoán bằng mô hình có sẵn trong repo:
 
 ```bat
-.venv\Scripts\python.exe train.py --augmentation-dir "path_for_simulate" --out "results\RUN_..." --resume
+.venv\Scripts\python.exe predict.py --model "results\RUN_20261110_121039_061836\best_model.joblib" --csv "D:\Signals\new.csv" --out "new_predictions"
 ```
 
-Verified feature caches are reused; unfinished model fitting starts again.
-Changes to source bytes, source label metadata, generator manifest, settings or
-feature code invalidate reuse or require a new run. There are no timed pauses.
+## Dừng và chạy tiếp
 
-See `docs/METHOD.md`, `docs/FEATURES.md`, `docs/REFERENCES.md` and
-`docs/CODE_GUIDE.md`. `example_results/` contains an actual measured-only run
-on the supplied ten originals; it is not an augmented-training result. Native
-Windows launchers and the external MATLAB generator were not executed on the
-Linux validation host. Corrected publisher-data edition identity remains
-unverified; see the included original provenance/license documents.
+Nhấn Ctrl+C để dừng. Khi chạy tiếp, dùng cùng đường dẫn đầu ra:
+
+```bat
+.venv\Scripts\python.exe train.py --augmentation-dir "D:\Project\MotorcycleIMULab" --out "results\RUN_..." --resume
+```
+
+Chương trình tái sử dụng bộ nhớ đệm đặc trưng đã xác minh và bắt đầu lại bước
+khớp mô hình nếu bước đó chưa hoàn tất. Khi dữ liệu nguồn, nhãn, manifest,
+cấu hình hoặc mã đặc trưng thay đổi, cần tính lại phần liên quan hoặc tạo
+phiên mới.
+
+## Tài liệu đi kèm
+
+- [Phương pháp](docs/METHOD.md)
+- [Đặc trưng đầu vào](docs/FEATURES.md)
+- [Tài liệu tham khảo](docs/REFERENCES.md)
+- [Hướng dẫn đọc mã](docs/CODE_GUIDE.md)
+
+`example_results/` chứa kết quả một phiên huấn luyện chỉ với 10 bản ghi đo.
+Đợt kiểm tra trên Linux chưa chạy các tệp lệnh Windows và trình sinh dữ liệu
+MATLAB. Tài liệu nguồn gốc dữ liệu đi kèm ghi nhận rằng phiên bản dữ liệu đã
+đính chính của nhà xuất bản còn chờ đối chiếu.

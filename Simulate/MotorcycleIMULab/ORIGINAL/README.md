@@ -1,14 +1,7 @@
-# ORIGINAL
+# ORIGINAL — Tái dựng tín hiệu IMU
 
-Measured inputs are stored under `data/build` and `data/test`.
-Call `RUN_ORIGINAL` from the project root. Outputs are written to
-`results/RUN_.../`; open `REPORT.html` in that session.
+Dữ liệu đo nằm trong `data/build` và `data/test`. Chạy `RUN_ORIGINAL` từ thư mục gốc MotorcycleIMULab. Kết quả được ghi vào `results/RUN_.../`. Mở `REPORT.html` của phiên để xem kết quả.
 
-The stage estimates a shared calibration from the seven BUILD recordings,
-freezes it, then processes the three TEST recordings without retuning.
-It exports full signals, states, numerical fits and sharp SVG/PNG charts.
-Movie export is not part of the project.
+Chương trình ước lượng hiệu chuẩn chung từ bảy bản ghi BUILD, cố định cấu hình rồi xử lý ba bản ghi TEST bằng cấu hình đó. Đầu ra gồm tín hiệu và trạng thái chuyển động theo toàn bộ thời lượng, chỉ số độ bám và biểu đồ SVG/PNG. Phiên bản này tập trung xuất dữ liệu và biểu đồ.
 
-Source modules are grouped by calibration, conditioning, reconstruction,
-evaluation, IO, plotting, reporting, validation and workflow orchestration.
-Shared numerical/reporting helpers are reused by AUGMENTED.
+Mã nguồn được tổ chức theo nhiệm vụ hiệu chuẩn, xử lý tín hiệu, tái dựng, đánh giá, đọc ghi dữ liệu, vẽ biểu đồ, tạo báo cáo, kiểm tra và điều phối. Bước AUGMENTED dùng lại các hàm tính toán và báo cáo dùng chung.
