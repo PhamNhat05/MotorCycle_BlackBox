@@ -44,14 +44,14 @@ This is a software fixture, not measured motorcycle classification performance.
 ```bat
 py -3.11 -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements.txt
-.venv\Scripts\python.exe train.py --augmentation-dir "D:\Project\MotorcycleIMULab"
+.venv\Scripts\python.exe train.py --augmentation-dir "path"
 ```
 
 If you moved the augmented result outside its source project, provide its
 matching original result as well:
 
 ```bat
-.venv\Scripts\python.exe train.py --augmentation-dir "D:\Saved\Augmented_RUN" --original-run "D:\Saved\Original_RUN"
+.venv\Scripts\python.exe train.py --augmentation-dir "path\Saved\Augmented_RUN" --original-run "path\Saved\Original_RUN"
 ```
 
 Without augmentation:
@@ -165,8 +165,8 @@ be uniform and increasing. Source frequency must be an integer multiple of
 supported. Named `time,Ax,Ay,Az,Gx,Gy,Gz` and Rx/Ry/Rz aliases are also accepted.
 
 ```bat
-.venv\Scripts\python.exe predict.py --csv "D:\Signals\new.csv"
-.venv\Scripts\python.exe predict.py --csv "D:\Signals\new.csv" --stream
+.venv\Scripts\python.exe predict.py --csv "path\Signals\new.csv"
+.venv\Scripts\python.exe predict.py --csv "path\Signals\new.csv" --stream
 ```
 
 `--stream` replays causal sample-by-sample inference. Default full-file inference
