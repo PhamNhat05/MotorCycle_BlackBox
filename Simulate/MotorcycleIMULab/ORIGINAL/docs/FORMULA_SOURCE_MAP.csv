@@ -1,0 +1,17 @@
+ID,Formula_or_item,Source,Implementation,Scope
+F01,Quaternion product/rotation/exp,R3,ORIGINAL/src/reconstruction/quaternion_math.m,Hamilton scalar-first active body-to-world
+F02,Specific force and gyro with additive bias,R3;R7,ORIGINAL/src/reconstruction/query_imu.m,Sensor-to-body mounting explicitly declared
+F03,Rigid lever-arm acceleration,R7; direct differentiation of pS=pB+Rr,ORIGINAL/src/reconstruction/query_imu.m,Fixed body-frame sensor translation
+F04,B-spline recurrence,R4;R5,ORIGINAL/src/conditioning/build_spline_basis.m,Local sparse Cox-de Boor evaluation
+F05,Coefficient-penalized block least squares,PROJECT_DERIVATION,ORIGINAL/src/conditioning/condition_signals.m,Numerical design and penalty choices
+F06,Overlap cosine blending,PROJECT_DERIVATION,ORIGINAL/src/conditioning/condition_signals.m,All rows retained; no state resets
+F07,Five-point polynomial derivative,R6; PROJECT_DERIVATION,ORIGINAL/src/conditioning/differentiate_signal.m,Endpoint moment equations derived in code
+F08,Quaternion midpoint propagation and derivatives,R3,ORIGINAL/src/reconstruction/reconstruct_motion.m,IMU-conditioned kinematics; no ESKF
+F09,Linear acceleration exact integration,PROJECT_DERIVATION via integration,ORIGINAL/src/reconstruction/reconstruct_motion.m;ORIGINAL/src/reconstruction/query_imu.m,C2 sensor position
+F10,Normalized quintic quaternion Hermite,R6 background; PROJECT_DERIVATION,ORIGINAL/src/reconstruction/query_imu.m,Six endpoint constraints solved explicitly
+F11,Bias/translation affine augmentation,R7 plus PROJECT_DERIVATION,AUGMENTED/src/generation/compute_sensor_variant.m,Same latent motion; fixed offset; constant bias
+F12,NRMSE fit percentage,R8,ORIGINAL/src/evaluation/evaluate_reconstruction.m,Not 3D accuracy or classifier accuracy
+F13,RMSE/MAE/Pearson,STANDARD_DEFINITIONS,ORIGINAL/src/evaluation/evaluate_reconstruction.m,Every original sample; no time alignment
+F14,Acceptance thresholds; priors; perturbation bounds,PROJECT_CHOICES,ORIGINAL_CONFIG.m,No paper claimed as empirical validation
+D01,Data origin and contact annotations,R1,ORIGINAL/config/INPUT_MANIFEST.json,Publisher origin with exact supplied-byte hashes
+D02,Ay conversion-error/edition caution,R2,docs/DATA_PROVENANCE.md,Corrected supplement identity unresolved

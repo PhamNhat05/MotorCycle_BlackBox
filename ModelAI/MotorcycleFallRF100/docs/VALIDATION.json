@@ -1,0 +1,51 @@
+{
+  "validated_at": "2026-11-09T22:41:27.521500+07:00",
+  "host": "Linux, Python 3.12; pinned dependency metadata supports Python 3.11",
+  "unit_checks": {
+    "passed": 8,
+    "scope": [
+      "source checksums and split",
+      "column parsing",
+      "label boundaries",
+      "early guard and cooldown",
+      "gyro-prior lever-arm rebase",
+      "balanced sample mass",
+      "causal batch/stream equivalence",
+      "frequency/feature definitions"
+    ]
+  },
+  "augmented_end_to_end_software_fixture": {
+    "status": "PASS",
+    "generated_temporary_variants": 1000,
+    "split": [
+      600,
+      200,
+      200
+    ],
+    "audited_recordings": 1010,
+    "tampered_csv_rejected": true,
+    "incomplete_export_rejected": true,
+    "explicit_partial_mode_checked": true,
+    "rf_trees": 100,
+    "numeric_results_are_real_motorcycle_performance": false
+  },
+  "real_measured_only_run": {
+    "status": "COMPLETE",
+    "original_files": 10,
+    "rf_trees": 100,
+    "threshold": 0.75,
+    "real_test_windows": 333,
+    "real_test_fall_events": 1,
+    "detected_real_test_fall_events": 1,
+    "real_test_accuracy": 1.0,
+    "real_test_f1": 1.0,
+    "used_augmentation": false
+  },
+  "report_local_links_checked": 43,
+  "missing_report_assets": [],
+  "prediction_cli": "PASS: latest relative model pointer; two independent real CSVs",
+  "native_windows_launchers_executed": false,
+  "matlab_executed": false,
+  "esp32_s3_measured": false,
+  "real_augmented_csvs_supplied_in_input": false
+}

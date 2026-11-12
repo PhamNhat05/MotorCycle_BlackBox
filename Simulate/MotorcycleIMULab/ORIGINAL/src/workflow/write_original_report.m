@@ -1,0 +1,89 @@
+function write_original_report(runDirectory)
+    % WRITE_ORIGINAL_REPORT Build readable HTML tables and vector-chart links.
+    % Input: original session directory. Outputs: REPORT.html and aggregate CSVs.
+
+    state = load(fullfile(runDirectory, 'RUN_STATE.mat'), 'manifest', 'C');
+    manifest = state.manifest;
+    summaryRows = cell(0, 7);
+    axisTables = {};
+    sections = {};
+    for index = 1:numel(manifest)
+        record = manifest(index);
+        directory = fullfile(runDirectory, 'records', record.key);
+        marker = fullfile(directory, 'QUALITY.json');
+        recordStatus = 'PENDING';
+        samples = 0;
+        if isfile(marker)
+            quality = jsondecode(fileread(marker));
+            metrics = readtable(fullfile(directory, 'AXIS_FIT.csv'), 'TextType', 'string');
+            recordStatus = 'FAIL';
+            if quality.pass
+                recordStatus = 'PASS';
+            end
+            samples = quality.scored_samples;
+            axisTables{end + 1} = addvars(metrics, ...
+                                          repmat(string(record.key), height(metrics), 1), ...
+                                          repmat(string(record.split), height(metrics), 1), ...
+                                          'Before', 1, 'NewVariableNames', {'Record', 'Split'});
+
+            section = sprintf(['<section class="card" id="%s"><h2>%s</h2>' ...
+                               '<p><strong>%s | %s</strong> | %d samples per axis | %.3f to %.3f s</p>' ...
+                               '<div class="table-scroll"><table><thead><tr><th>Axis</th><th>Unit</th>' ...
+                               '<th>RMSE</th><th>MAE</th><th>Maximum absolute error</th><th>Correlation</th>' ...
+                               '<th>NRMSE fit</th><th>Gate</th></tr></thead><tbody>'], ...
+                              record.key, record.key, upper(record.split), recordStatus, ...
+                              samples, record.first_time_s, record.last_time_s);
+            for axisIndex = 1:6
+                result = 'FAIL';
+                if metrics.Pass(axisIndex)
+                    result = 'PASS';
+                end
+                section = [section sprintf(['<tr><td><strong>%s</strong></td><td>%s</td>' ...
+                                            '<td class="num">%.6g</td><td class="num">%.6g</td><td class="num">%.6g</td>' ...
+                                            '<td class="num">%.6f</td><td class="num">%.3f%%</td>' ...
+                                            '<td class="%s">%s</td></tr>'], char(metrics.Axis(axisIndex)), ...
+                                           char(metrics.Unit(axisIndex)), metrics.RMSE(axisIndex), metrics.MAE(axisIndex), ...
+                                           metrics.MaxAbsError(axisIndex), metrics.PearsonR(axisIndex), ...
+                                           metrics.NRMSEFit_percent(axisIndex), lower(result), result)];
+            end
+            section = [section '</tbody></table></div>' sprintf( ...
+                                                                '<p><a href="records/%s/FULL_SIGNAL_COMPARISON.csv">Full signal CSV</a> | <a href="records/%s/FULL_STATE.csv">Full state CSV</a> | <a href="records/%s/AXIS_FIT.csv">Axis-fit CSV</a></p></section>', ...
+                                                                record.key, record.key, record.key)];
+            imageName = 'FULL_RECORD_FIT.png';
+            if isfile(fullfile(directory, 'FULL_RECORD_FIT.svg'))
+                imageName = 'FULL_RECORD_FIT.svg';
+            end
+            section = [section chart_report_card([record.key ': measured and reconstructed'], ...
+                                                 ['records/' record.key '/' imageName], ...
+                                                 ['records/' record.key '/FULL_RECORD_FIT.png'], 1920)];
+            sections{end + 1} = section;
+        end
+        summaryRows(end + 1, :) = {record.key, record.split, recordStatus, samples, ...
+                                   record.first_time_s, record.last_time_s, record.record_contains_fall};
+    end
+
+    summary = cell2table(summaryRows, 'VariableNames', {'Record', 'Split', 'Status', ...
+                                                        'ScoredSamples', 'FirstTime_s', 'LastTime_s', 'RecordContainsFall'});
+    writetable(summary, fullfile(runDirectory, 'RECORD_SUMMARY.csv'));
+    if ~isempty(axisTables)
+        allMetrics = vertcat(axisTables{:});
+        writetable(allMetrics, fullfile(runDirectory, 'ALL_AXIS_FIT.csv'));
+    end
+    workflowStatus = 'IN_PROGRESS';
+    if isfile(fullfile(runDirectory, 'STATUS.json'))
+        savedStatus = jsondecode(fileread(fullfile(runDirectory, 'STATUS.json')));
+        workflowStatus = savedStatus.status;
+    end
+    page = [report_header('Original reconstruction report') ...
+            '<h1>Original reconstruction report</h1><section class="card">' ...
+            '<p><strong>Status: ' workflowStatus '</strong></p>' ...
+            '<p>Seven BUILD recordings determine the shared calibration. The configuration is frozen before the three TEST reconstructions. Every source sample is retained.</p>' ...
+            '<p><a href="ALL_AXIS_FIT.csv">All 60 axis fits</a> | <a href="RECORD_SUMMARY.csv">Ten-record summary</a></p>' ...
+            '<p class="help">Charts use dark labels, larger fonts and vector SVG. The default readable size avoids shrinking all six axes into a narrow image.</p></section>'];
+    page = [page strjoin(sections, newline) ...
+            '<footer>IMU fit is a conditional reconstruction roundtrip. Independent position or orientation measurements are needed to validate the physical trajectory.</footer></main></body></html>'];
+    write_html_file(fullfile(runDirectory, 'REPORT.html'), page);
+    file = fopen(fullfile(runDirectory, 'REPORT.md'), 'w');
+    cleanup = onCleanup(@() fclose(file));
+    fprintf(file, '# Original reconstruction report\n\nStatus: %s\n\nOpen REPORT.html for readable tables and sharp vector charts.\n', workflowStatus);
+end

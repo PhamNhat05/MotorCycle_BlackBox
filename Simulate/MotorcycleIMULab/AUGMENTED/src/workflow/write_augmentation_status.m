@@ -1,0 +1,6 @@
+function write_augmentation_status(runDirectory, state, count, message)
+    % WRITE_AUGMENTATION_STATUS Record the number of completely exported variants.
+    write_json(fullfile(runDirectory, 'STATUS.json'), ...
+               struct('status', state, 'completed_variants', count, ...
+               'requested_variants', 1000, 'message', message, 'updated_at', datestr(now, 30)));
+end

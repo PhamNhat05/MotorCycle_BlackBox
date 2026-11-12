@@ -1,0 +1,15 @@
+{
+  "seed": 42,
+  "sampling_hz": 100,
+  "lowpass_hz": 25,
+  "filter_order": 4,
+  "window_s": 2.0,
+  "stride_s": 0.5,
+  "pre_contact_guard_s": 0.5,
+  "positive_after_hip_s": 2.0,
+  "alarm_cooldown_s": 5.0,
+  "rf": {"n_estimators": 100, "max_depth": 8, "min_samples_leaf": 1, "max_features": "sqrt", "bootstrap": true, "n_jobs": 4},
+  "threshold_grid": [0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95],
+  "expected_variants_per_parent": 100,
+  "expected_group_counts": {"bias_only": 34, "position_only": 33, "bias_and_position": 33}
+}

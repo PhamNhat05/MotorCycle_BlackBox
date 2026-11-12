@@ -1,0 +1,13 @@
+test_batch_and_stream_are_equivalent_and_past_only (test_core.CoreChecks.test_batch_and_stream_are_equivalent_and_past_only) ... ok
+test_gyro_prior_rebase_matches_fresh_lever_arm_equation (test_core.CoreChecks.test_gyro_prior_rebase_matches_fresh_lever_arm_equation) ... ok
+test_label_boundaries_and_no_record_level_positive_label (test_core.CoreChecks.test_label_boundaries_and_no_record_level_positive_label) ... ok
+test_named_column_order_and_units_contract (test_core.CoreChecks.test_named_column_order_and_units_contract) ... ok
+test_original_integrity_and_parent_split (test_core.CoreChecks.test_original_integrity_and_parent_split) ... ok
+test_stationary_and_frequency_feature_definitions (test_core.CoreChecks.test_stationary_and_frequency_feature_definitions) ... ok
+test_uncertain_early_alarm_is_distinct_from_positive_windows (test_core.CoreChecks.test_uncertain_early_alarm_is_distinct_from_positive_windows) ... ok
+test_weight_mass_is_balanced_despite_many_descendants (test_core.CoreChecks.test_weight_mass_is_balanced_despite_many_descendants) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.873s
+
+OK

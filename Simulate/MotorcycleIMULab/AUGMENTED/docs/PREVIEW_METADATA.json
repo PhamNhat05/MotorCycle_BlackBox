@@ -1,0 +1,26 @@
+{
+  "scope": "Independent Python layout preview, not native MATLAB",
+  "parent": "fall_curve",
+  "samples": 78461,
+  "position_delta_body_m": [
+    0.5,
+    0.0,
+    0.0
+  ],
+  "bias_delta": [
+    10.0,
+    0.0,
+    0.0,
+    0.2,
+    0.0,
+    0.0
+  ],
+  "nominal_bias": [
+    0.0,
+    0.0,
+    0.0,
+    -0.11551499999999876,
+    0.9298879999999992,
+    0.3720009999999999
+  ]
+}

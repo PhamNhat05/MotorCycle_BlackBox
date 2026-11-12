@@ -1,0 +1,127 @@
+{
+  "status": "PASS",
+  "native_matlab_executed": false,
+  "native_graphics_executed": false,
+  "matlab_files": 54,
+  "execution_entry_points": [
+    "RUN_ALL.m",
+    "RUN_AUGMENT.m",
+    "RUN_ORIGINAL.m"
+  ],
+  "top_level_directories": [
+    "ORIGINAL",
+    "AUGMENTED"
+  ],
+  "english_code_names_comments_and_reports": true,
+  "preserved_numerical_functions": [
+    "build_spline_basis",
+    "estimate_calibration",
+    "condition_signals",
+    "differentiate_signal",
+    "select_display_indices",
+    "hash_file",
+    "write_json",
+    "quaternion_math",
+    "evaluate_reconstruction",
+    "query_imu",
+    "read_original_record",
+    "reconstruct_motion",
+    "collect_record_status",
+    "original_selfcheck",
+    "write_numeric_csv",
+    "compute_variant_metrics",
+    "create_augmentation_plan"
+  ],
+  "original_scientific_settings_unchanged": true,
+  "originals": [
+    {
+      "key": "fall_curve",
+      "split": "build",
+      "samples": 78461,
+      "bytes_unchanged": true
+    },
+    {
+      "key": "fall_roundabout",
+      "split": "build",
+      "samples": 66365,
+      "bytes_unchanged": true
+    },
+    {
+      "key": "fall_leaning",
+      "split": "build",
+      "samples": 81663,
+      "bytes_unchanged": true
+    },
+    {
+      "key": "acceleration_straight",
+      "split": "build",
+      "samples": 138303,
+      "bytes_unchanged": true
+    },
+    {
+      "key": "harsh_braking_straight",
+      "split": "build",
+      "samples": 111485,
+      "bytes_unchanged": true
+    },
+    {
+      "key": "fall_like_1",
+      "split": "build",
+      "samples": 132478,
+      "bytes_unchanged": true
+    },
+    {
+      "key": "fall_like_2",
+      "split": "build",
+      "samples": 148926,
+      "bytes_unchanged": true
+    },
+    {
+      "key": "fall_slippery_straight",
+      "split": "test",
+      "samples": 74045,
+      "bytes_unchanged": true
+    },
+    {
+      "key": "acceleration_curve",
+      "split": "test",
+      "samples": 47935,
+      "bytes_unchanged": true
+    },
+    {
+      "key": "fall_like_3",
+      "split": "test",
+      "samples": 128446,
+      "bytes_unchanged": true
+    }
+  ],
+  "variants_per_parent": {
+    "bias_only": 34,
+    "position_only": 33,
+    "combined": 33
+  },
+  "expected_total_variants": 1000,
+  "expected_total_augmented_rows": 100810700,
+  "individual_chart_formats": [
+    "SVG",
+    "PNG"
+  ],
+  "png_dpi": 220,
+  "individual_html_reports": true,
+  "resume_checks_chart_and_report_hashes": true,
+  "white_background_contrast_ratios": {
+    "#111827": 17.73971700407407,
+    "#334155": 10.35474573184942,
+    "#0a294d": 14.611281384812457,
+    "#c7290a": 5.60002844424434,
+    "#662997": 9.016728055907198,
+    "#7a4d00": 7.268785395561969,
+    "#4d5e73": 6.636751792416292
+  },
+  "preview_png_pixels": [
+    4950,
+    4224
+  ],
+  "preview_scope": "Independent Python reproduction from real source data; not native MATLAB",
+  "syntax_check": "MISS_HIT Core 0.9.44, conservative MATLAB R2022a grammar"
+}
